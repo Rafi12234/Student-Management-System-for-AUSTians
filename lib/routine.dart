@@ -105,9 +105,11 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     if (errorMessage.isNotEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text("Class Routine")),
+        appBar: AppBar(title: Text("Class Routine",style: TextStyle(fontFamily: 'Font5'),)),
         body: Center(child: Text(errorMessage)),
       );
     }
@@ -122,37 +124,46 @@ class _ClassRoutinePageState extends State<ClassRoutinePage> {
           // Day Selector
           Container(
             padding: EdgeInsets.symmetric(vertical: 10),
-            color: Colors.grey[200],
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: days.map((day) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() => selectedDay = day);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      margin: EdgeInsets.symmetric(horizontal: 5),
-                      decoration: BoxDecoration(
-                        color: selectedDay == day
-                            ? Color(0xff075e57)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Color(0xff075e57)),
-                      ),
-                      child: Text(
-                        day,
-                        style: TextStyle(
+            color: Colors.white,
+            width: screenWidth,
+            height: screenHeight*0.09,
+            child: Center(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: days.map((day) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() => selectedDay = day);
+                      },
+                      child: Container(
+                        width: screenWidth*0.3,
+                        height: screenHeight*0.0457,
+                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        margin: EdgeInsets.symmetric(horizontal: 5),
+                        decoration: BoxDecoration(
                           color: selectedDay == day
-                              ? Colors.white
-                              : Color(0xff075e57),
-                          fontWeight: FontWeight.bold,
+                              ? Color(0xff075e57)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Color(0xff075e57)),
+                        ),
+                        child: Center(
+                          child: Text(
+                            day,
+                            style: TextStyle(
+                              color: selectedDay == day
+                                  ? Colors.white
+                                  : Color(0xff075e57),
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth*0.04
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
           ),
