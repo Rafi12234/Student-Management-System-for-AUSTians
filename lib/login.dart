@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:project/dashboard.dart';
 import 'package:project/forgotpass.dart';
+import 'package:project/Info.dart';
+import 'package:project/animationpage.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -15,6 +17,7 @@ class _Login extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _errorMessage = '';
+  bool _obscurePassword = true;
 
   // Automatically check if the user is already logged in
   @override
@@ -33,25 +36,37 @@ class _Login extends State<Login> {
       );
     }
   }
+  bool _isLoading = false;
 
-  void _login() async {
+  Future<void> _login() async {  // Change return type to Future<void>
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      final userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Dashboard()),
-      );
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginSuccessAnimation(),
+          ),
+        );
+      }
     } catch (e) {
-      setState(() {
-        _errorMessage =
-        'Login failed. Please check your credentials and try again.';
-      });
-      print("Error: $e");
+      if (mounted) {
+        setState(() => _errorMessage = 'Login failed. Please Check Your Edu Mail & Password Again');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -184,9 +199,11 @@ class _Login extends State<Login> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Enter Email',
+                        prefixIcon: Icon(Icons.email, color: Colors.white54), // Added mail icon
                         labelStyle: TextStyle(
-                            color: Colors.white54,
-                            fontSize: screenWidth * 0.04),
+                          color: Colors.white54,
+                          fontSize: screenWidth * 0.04,
+                        ),
                         hintText: 'Enter Your Edu Mail',
                         hintStyle: TextStyle(color: Colors.white54),
                         focusedBorder: OutlineInputBorder(
@@ -243,11 +260,25 @@ class _Login extends State<Login> {
                     SizedBox(height: screenHeight * 0.015),
                     TextField(
                       controller: _passwordController,
+                      obscureText: _obscurePassword, // Add this state variable: bool _obscurePassword = true;
                       decoration: InputDecoration(
                         labelText: 'Enter Password',
-                        labelStyle: TextStyle(
+                        prefixIcon: Icon(Icons.lock, color: Colors.white54), // Added lock icon
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
                             color: Colors.white54,
-                            fontSize: screenWidth * 0.04),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                        labelStyle: TextStyle(
+                          color: Colors.white54,
+                          fontSize: screenWidth * 0.04,
+                        ),
                         hintText: 'Enter Your Password',
                         hintStyle: TextStyle(color: Colors.white54),
                         focusedBorder: OutlineInputBorder(
@@ -292,19 +323,32 @@ class _Login extends State<Login> {
                     ),
                     SizedBox(height: screenHeight * 0.018),
                     ElevatedButton(
-                      onPressed: _login,
+                      onPressed: _isLoading
+                          ? null
+                          : () {
+                        // Remove async from here and handle in _login
+                        _login();
+                      },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xff075e57),
-                        foregroundColor: Color(0xffe8ede8),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 15),
+                        backgroundColor: const Color(0xff075e57),
+                        foregroundColor: const Color(0xffe8ede8),
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                         ),
                         elevation: 5,
-                        shadowColor: Color(0xff054b4a),
+                        shadowColor: const Color(0xff054b4a),
                       ),
-                      child: Text(
+                      child: _isLoading
+                          ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                          : Text(
                         'Sign In',
                         style: TextStyle(fontSize: screenWidth * 0.04),
                       ),

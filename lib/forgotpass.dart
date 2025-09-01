@@ -31,15 +31,21 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Reset Password'),
-        backgroundColor: Color(0xff204f20),
-      foregroundColor: Colors.white,
+        backgroundColor: Color(0xff064a44),
+        foregroundColor: Colors.white,
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xff246624), Color(0xff45bf45)],
-            begin: Alignment.topLeft,
-            end: Alignment.topRight,
+            colors: [
+              Color(0xff075e57),
+              Color(0xff048c76),
+              Color(0xff268b73),
+              Color(0xff328f79),
+              Color(0xff54998e)
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         ),
         child: Padding(
